@@ -1,0 +1,16 @@
+[Unit]
+Description=Home snapshot (rsync) timer.
+RefuseManualStart=no
+RefuseManualStop=no
+
+[Timer]
+#Execute job if it missed a run due to machine being off
+Persistent=false
+#Run 5 minutes after boot once
+OnBootSec=300
+#Run every 24 hours thereafter
+OnUnitActiveSec=36000
+Unit=home-snapshot.service
+
+[Install]
+WantedBy=timers.target

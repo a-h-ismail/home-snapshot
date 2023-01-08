@@ -1,0 +1,9 @@
+[Unit]
+Description=Home snapshot service using rsync.
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/home-snapshot.sh
+
+[Install]
+WantedBy=default.target

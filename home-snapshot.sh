@@ -23,7 +23,7 @@ if [ -z $(ls "$destination_dir" | grep $today_date) ]
   rsync_exit=$?
   if [ $rsync_exit -ne "0" ]
   then
-    notify-send -a "rsync" -u critical 'Home snapshot possibly failed' "Will retry on next run, rsync exit value $rsync_exit."
+    notify-send -a "rsync" -u critical 'Home snapshot possibly failed' "Check the log at /tmp/backup_error.log and run the service again."
     rm -rf $backup_path
     exit 1
   fi

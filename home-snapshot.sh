@@ -5,7 +5,6 @@ config=`cat ~/.config/home-snapshot.conf`
 
 source_dir=`echo "$config" | grep 'SOURCE_DIR=' | cut -d = -f 2`
 destination_dir=`echo "$config" | grep 'DESTINATION_DIR=' | cut -d = -f 2`
-exclusions=`echo "$config" | grep 'EXCLUDE=' | cut -d = -f 2`
 max_snapshots=`echo "$config" | grep 'MAX_SNAPSHOTS=' | cut -d = -f 2`
 
 today_date="$(date '+%d-%m-%Y')"
@@ -18,7 +17,7 @@ latest_link="${destination_dir}/latest"
 if [ -z $(ls "$destination_dir" | grep $today_date) ]
   then
   mkdir -p "${backup_path}"
-  rsync -aX --delete "${source_dir}/" --link-dest "${latest_link}" --exclude={"$exclusions"} "${backup_path}" 2> /tmp/backup_error.log
+  rsync -aX --delete "$source_dir/" --link-dest "$latest_link" --exclude-from="$HOME/.config/home-snapshot-excl.conf" "$backup_path" 2> /tmp/backup_error.log
 
   #If rsync doesn't exit with value 0 for any reason, notify the user
   rsync_exit=$?
@@ -38,7 +37,7 @@ oldest_backup=$(echo "$backups" | awk 'NR==1{print $1}')
 let backup_count=$(echo "$backups" | wc -w)-1
 if [ $backup_count -gt $max_snapshots ] && [ -n $oldest_backup ]
 then
-  echo "Deleting backup folder $oldest_backup"
+  echo "Deleting snapshot folder $oldest_backup"
   echo "${destination_dir}/$oldest_backup"
   rm -rf "${destination_dir}/$oldest_backup"
 fi

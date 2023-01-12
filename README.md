@@ -2,7 +2,7 @@
 Simple systemd service to take daily snapshots for a specific directory (using rsync).
 
 # Notes
-- The timer triggers 5 minutes after boot, then once every 12 hours
+- The timer triggers 5 minutes after boot, then once every 12 hours.
 - The script will create a link named `latest` pointing to the most recent snapshot. It is used for convenience and to make incremental snapshots possible, do not delete it.
 - Main configuration file is stored at `~/.config/home-snapshot.conf`, exclusions file is at `~/.config/home-snapshot-excl.conf`
 

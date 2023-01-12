@@ -1,5 +1,5 @@
 # Purpose
-Simple systemd service to take daily snapshots for a specific directory (using rsync).
+This repository hosts `home-snapshot`, a simple service to take incremental snapshots for any directory.
 
 # Notes
 - The timer triggers 5 minutes after boot, then once every 12 hours.

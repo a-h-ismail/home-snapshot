@@ -1,6 +1,5 @@
 #!/bin/bash
-mkdir ~/.config/systemd
-mkdir ~/.config/systemd/user
+mkdir -p ~/.config/systemd/user ~/.local/bin
 cp home-snapshot.timer home-snapshot.service ~/.config/systemd/user
 cp home-snapshot.sh ~/.local/bin
 cp home-snapshot.conf home-snapshot-excl.conf ~/.config

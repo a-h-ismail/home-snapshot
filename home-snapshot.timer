@@ -7,9 +7,9 @@ RefuseManualStop=no
 #Execute job if it missed a run due to machine being off
 Persistent=false
 #Run 5 minutes after boot once
-OnBootSec=300
+OnBootSec=5min
 #Run every 12 hours thereafter
-OnUnitActiveSec=43200
+OnUnitActiveSec=12h
 Unit=home-snapshot.service
 
 [Install]

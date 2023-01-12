@@ -2,12 +2,19 @@
 Simple systemd service to take daily snapshots for a specific directory (using rsync).
 
 # Notes
-- The timer triggers once per day.
+- The timer triggers 5 minutes after boot, then once every 12 hours
 - The script will create a link named `latest` pointing to the most recent snapshot. It is used for convenience and to make incremental snapshots possible, do not delete it.
 - Main configuration file is stored at `~/.config/home-snapshot.conf`, exclusions file is at `~/.config/home-snapshot-excl.conf`
 
 # Installation
-The following binaries are needed, install them using your package manager: `rsync git bash notify-send`<br>
+Binaries required: `git bash notify-send rsync`
+## Ubuntu/Debian
+Run:<br>
+`sudo apt update && sudo apt install git rsync libnotify-bin bash`
+
+## Fedora
+Run:<br>
+`sudo dnf install git rsync libnotify bash`
 
 Clone the repository and run the install script:<br>
 ```

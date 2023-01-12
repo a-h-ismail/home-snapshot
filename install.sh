@@ -8,3 +8,5 @@ nano ~/.config/home-snapshot.conf ~/.config/home-snapshot-excl.conf
 chmod +x ~/.local/bin/home-snapshot.sh
 systemctl --user daemon-reload
 systemctl --user enable --now home-snapshot.timer
+echo "First run of snapshot script:"
+systemctl --user start home-snapshot.service

@@ -8,8 +8,8 @@ RefuseManualStop=no
 Persistent=false
 #Run 5 minutes after boot once
 OnBootSec=300
-#Run every 24 hours thereafter
-OnUnitActiveSec=36000
+#Run every 12 hours thereafter
+OnUnitActiveSec=43200
 Unit=home-snapshot.service
 
 [Install]

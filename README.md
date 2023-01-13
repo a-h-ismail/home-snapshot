@@ -8,14 +8,16 @@ This repository hosts `home-snapshot`, a simple service to take incremental snap
 
 # Installation
 Binaries required: `git bash notify-send rsync`
-## Ubuntu/Debian
+## Install required packages
+### Ubuntu/Debian
 Run:<br>
 `sudo apt update && sudo apt install git rsync libnotify-bin bash`
 
-## Fedora
+### Fedora
 Run:<br>
 `sudo dnf install git rsync libnotify bash`
 
+## Build from source
 Clone the repository and run the install script:<br>
 ```
 git clone --depth 1 https://gitlab.com/a-h-ismail/home-snapshot

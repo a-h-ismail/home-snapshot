@@ -4,6 +4,8 @@ Description=Home snapshot service using rsync.
 [Service]
 Type=simple
 ExecStart=%h/.local/bin/home-snapshot.sh
+RestartSec=10min
+Restart=on-failure
 
 [Install]
 WantedBy=default.target

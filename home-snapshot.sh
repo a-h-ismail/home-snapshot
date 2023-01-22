@@ -23,25 +23,21 @@ fi
 
 log_location='/tmp/home_snapshot.log'
 
-#If a backup was taken today, don't take another one
-if [ -z $(ls "$destination_dir" | grep $today_date) ]
-  then
-  mkdir -p "${backup_path}"
-  rsync -aX --delete $no_perms "$source_dir/" --link-dest "$latest_link" --exclude-from="$HOME/.config/home-snapshot-excl.conf" "$backup_path" 2> $log_location
 
-  #If rsync doesn't exit with value 0 for any reason, notify the user
-  rsync_exit=$?
-  if [ $rsync_exit -ne "0" ]
-  then
-    notify-send -a "rsync" -u critical 'Home snapshot possibly failed' "Check the log at $log_location, the service will retry in 10 minutes."
-    rm -rf $backup_path
-    exit 1
-  fi
-  rm -rf "${latest_link}"
-  ln -rs "${backup_path}" "${latest_link}"
-else
-  echo "Snapshot was already taken: $today_date"
+mkdir -p "${backup_path}"
+rsync -aXh --stats --delete $no_perms "$source_dir/" --link-dest "$latest_link" --exclude-from="$HOME/.config/home-snapshot-excl.conf" "$backup_path" 2> $log_location
+
+#If rsync doesn't exit with value 0 for any reason, notify the user
+rsync_exit=$?
+if [ $rsync_exit -ne "0" ]
+then
+  notify-send -a "rsync" -u critical 'Home snapshot possibly failed' "Check the log at $log_location, the service will retry in 10 minutes."
+  rm -rf $backup_path
+  exit 1
 fi
+rm -rf "${latest_link}"
+ln -rs "${backup_path}" "${latest_link}"
+
 
 #Cleanup old backups (keep only $max_snapshots)
 backups=$(ls -rt "$destination_dir")

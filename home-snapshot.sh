@@ -27,9 +27,9 @@ log_location='/tmp/home_snapshot.log'
 mkdir -p "${backup_path}"
 rsync -aXh --stats --delete $no_perms "$source_dir/" --link-dest "$latest_link" --exclude-from="$HOME/.config/home-snapshot-excl.conf" "$backup_path" 2> $log_location
 
-#If rsync doesn't exit with value 0 for any reason, notify the user
+# Act dependig on rsync exit
 rsync_exit=$?
-if [ $rsync_exit -ne "0" ]
+if [ $rsync_exit -ne "0" && $rsync_exit -ne "24" ]
 then
   notify-send -a "rsync" -u critical 'Home snapshot possibly failed' "Check the log at $log_location, the service will retry in 10 minutes."
   rm -rf $backup_path

@@ -23,13 +23,18 @@ fi
 
 log_location='/tmp/home_snapshot.log'
 
-
-mkdir -p "${backup_path}"
-rsync -aXh --stats --delete $no_perms "$source_dir/" --link-dest "$latest_link" --exclude-from="$HOME/.config/home-snapshot-excl.conf" "$backup_path" 2> $log_location
+#If a backup was taken today, don't take another one
+if [ -z $(ls "$destination_dir" | grep $today_date) ]
+  then
+  mkdir -p "${backup_path}"
+  rsync -aXh --stats --delete $no_perms "$source_dir/" --link-dest "$latest_link" --exclude-from="$HOME/.config/home-snapshot-excl.conf" "$backup_path" 2> $log_location
+else
+  echo "Snapshot was already taken: $today_date"
+fi
 
 # Act dependig on rsync exit
 rsync_exit=$?
-if [ $rsync_exit -ne "0" && $rsync_exit -ne "24" ]
+if [ $rsync_exit -ne "0" ] && [ $rsync_exit -ne "24" ]
 then
   notify-send -a "rsync" -u critical 'Home snapshot possibly failed' "Check the log at $log_location, the service will retry in 10 minutes."
   rm -rf $backup_path

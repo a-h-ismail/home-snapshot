@@ -27,8 +27,7 @@ log_location='/tmp/home_snapshot.log'
 if [ -z $(ls "$destination_dir" | grep $today_date) ]
   then
   mkdir -p "${backup_path}"
-  rsync -aXh --stats --delete $no_perms --inplace --partial --append \
-  "$source_dir/" --link-dest "$latest_link" --exclude-from="$HOME/.config/home-snapshot-excl.conf" "$backup_path" 2> $log_location
+  rsync -aXh --stats --delete $no_perms "$source_dir/" --link-dest "$latest_link" --exclude-from="$HOME/.config/home-snapshot-excl.conf" "$backup_path" 2> $log_location
 else
   echo "Snapshot was already taken: $today_date"
 fi

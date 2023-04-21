@@ -14,7 +14,7 @@ tldr: If you don't want problems with snapshots, use a Linux filesystem for the 
 
 # Other notes
 
-- The timer triggers the service 5 minutes after boot, then once every 12 hours.
+- The timer triggers the service 5 minutes after boot, then once every 12 hours of runtime (PC sleep mode pauses the timer).
 - On failure, the service will retry after 10 minutes.
 - The script will create a link named `latest` pointing to the most recent snapshot. It is used for convenience and to make incremental snapshots possible, do not delete it.
 - Main configuration file is stored at `~/.config/home-snapshot.conf`, exclusions file is at `~/.config/home-snapshot-excl.conf`

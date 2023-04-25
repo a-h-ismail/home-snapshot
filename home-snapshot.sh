@@ -4,8 +4,20 @@
 config=`cat ~/.config/home-snapshot.conf`
 
 source_dir=`echo "$config" | grep 'SOURCE_DIR=' | cut -d = -f 2`
+if [ -z "$source_dir" ]; then
+	notify-send -a "home-snapshot" -u critical 'Source directory is not specified' "Fix your configuration at $HOME/.config/home-snapshot.conf"
+	exit 1
+fi
 destination_dir=`echo "$config" | grep 'DESTINATION_DIR=' | cut -d = -f 2`
+if [ -z "$destination_dir" ]; then
+	notify-send -a "home-snapshot" -u critical 'Destination directory is not specified' "Fix your configuration at $HOME/.config/home-snapshot.conf"
+	exit 1
+fi
 max_snapshots=`echo "$config" | grep 'MAX_SNAPSHOTS=' | cut -d = -f 2`
+if [ -z "$max_snapshots" ]; then
+	notify-send -a "home-snapshot" -u critical 'Max snapshots is not specified' "Fix your configuration at $HOME/.config/home-snapshot.conf"
+	exit 1
+fi
 
 today_date="$(date '+%d-%m-%Y')"
 # Full backup path

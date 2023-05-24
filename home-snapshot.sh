@@ -26,7 +26,7 @@ backup_path="$destination_dir/$today_date"
 latest_link="$destination_dir/latest"
 # Use to add the --no-perms as workaround for filesystems not supporting Linux permissions
 no_perms=`echo "$config" | grep 'NO_PERMS=' | cut -d = -f 2`
-if [ $no_perms = "1" ]
+if [ "$no_perms" = "1" ]
 then
     no_perms="--no-perms"
 else

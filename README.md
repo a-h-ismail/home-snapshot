@@ -1,8 +1,10 @@
-# Purpose
+# home-snapshot
+
+## Purpose
 
 This repository hosts `home-snapshot`, a simple service to take incremental snapshots for any directory.
 
-# About filesystem compatibility
+## About filesystem compatibility
 
 The backup script uses `rsync` with hard linking to save storage space and prevent unnecessary copying. To accomplish this, `rsync` compares the timestamps, permissions (and other data) of source files with the previous snapshot files to hardlink identical files instead of copying them. If your destination filesystem does not support Linux permissions, hard linking may never occur (because permissions are not the same as the original) which leads to unnecessary copying of already existing files, and causes the source permissions to be lost in case of restoring from a snapshot. <br>
 
@@ -12,28 +14,26 @@ The backup script uses `rsync` with hard linking to save storage space and preve
 <br>
 tldr: If you don't want problems with snapshots, use a Linux filesystem for the destination.
 
-# Other notes
+## Other notes
 
 - The timer triggers the service 5 minutes after boot, then once every 12 hours of runtime (PC sleep mode pauses the timer).
 - On failure, the service will retry after 10 minutes.
 - The script will create a link named `latest` pointing to the most recent snapshot. It is used for convenience and to make incremental snapshots possible, do not delete it.
 - Main configuration file is stored at `~/.config/home-snapshot.conf`, exclusions file is at `~/.config/home-snapshot-excl.conf`
 
-# Installation
+## Installation
 
-Binaries required: `git bash notify-send rsync`
+Binaries required: `git notify-send rsync`.
 
 ---
 
-## Install required packages
-
 ### Ubuntu/Debian
 
-`sudo apt update && sudo apt install git rsync libnotify-bin bash`
+`sudo apt update && sudo apt install git rsync libnotify-bin`
 
 ### Fedora
 
-`sudo dnf install git rsync libnotify bash`
+`sudo dnf install git rsync libnotify`
 
 ---
 Clone the repository and run the install script:<br>
@@ -45,6 +45,6 @@ chmod +x install.sh
 ./install.sh
 ```
 
-# Uninstallation
+## Uninstallation
 
 Run the `remove.sh` script.

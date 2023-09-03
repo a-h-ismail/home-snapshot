@@ -14,6 +14,12 @@ The backup script uses `rsync` with hard linking to save storage space and preve
 <br>
 tldr: If you don't want problems with snapshots, use a Linux filesystem for the destination.
 
+## Checksums as comparison criteria
+
+The service supports periodically running `rsync` with checksums as the file transfer criteria. This ensures that stale data is not getting silently corrupted. When `rsync` runs with checksums enabled, it will take significally longer to complete a run and take up a lot of disk I/O due to every single file that is in the source and destination being fully read.
+
+An untested backup is not really a backup, so by default the service will run in checksum mode once every 30 times, tune this to your liking in the configuration.
+
 ## Other notes
 
 - The timer triggers the service 5 minutes after boot, then once every 12 hours of runtime (PC sleep mode pauses the timer).

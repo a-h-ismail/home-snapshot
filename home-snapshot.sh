@@ -43,6 +43,8 @@ elif ! [[ $checksum_interval =~ [[:digit:]] ]]; then
     exit 4
 fi
 
+remote_fs=$(echo "$config" | grep '^REMOTE_FILESYSTEM' | cut -d = -f 2)
+
 if [ ! -f "$HOME/.local/share/home-snapshot-state" ]; then
     echo "$checksum_interval" > "$HOME/.local/share/home-snapshot-state"
 else
@@ -61,6 +63,11 @@ latest_link="$destination_dir/latest"
 log_location='/tmp/home_snapshot.log'
 
 rsync_options=(-aXh --stats --delete)
+
+# Disable rsync delta algorithm for remote filesystems
+if [[ $remote_fs == 'Y' ]]; then
+    rsync_options+=(-W)
+fi
 
 if [[ $no_perms -eq 1 ]]; then
     rsync_options+=(--no-perms)
@@ -101,7 +108,7 @@ if [ -z "$(echo * | grep "$today_date")" ]; then
     fi
 
     if [[ $rounds_until_checksum -gt 0 ]]; then
-        rounds_until_checksum=$(($rounds_until_checksum-1))
+        rounds_until_checksum=$((rounds_until_checksum-1))
     else
         rounds_until_checksum="$checksum_interval"
     fi

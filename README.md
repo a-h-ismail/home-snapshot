@@ -13,6 +13,10 @@ The backup script uses `rsync` with hard linking to save storage space and preve
 
 tldr: If you don't want problems with snapshots, use a Linux filesystem for the destination.
 
+## Remote filesystems as source/destination
+
+It is preferable to disable `rsync` delta algorithm for remote filesystems [due to performance implications](https://serverfault.com/a/682754/1032397). This can be done using the configuration option `REMOTE_FILESYSTEM=Y`
+
 ## Checksums as comparison criteria
 
 The service supports periodically running `rsync` with checksums as the file transfer criteria. Quoting `rsync` manual:

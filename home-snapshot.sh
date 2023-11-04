@@ -1,7 +1,7 @@
 #!/bin/bash
 # A script to perform incremental backups using rsync
 # Get configuration file content
-config=$(cat ~/.config/home-snapshot.conf)
+config=$(cat "$HOME/.config/home-snapshot.conf")
 
 # Get and validate source directory
 source_dir=$(echo "$config" | grep '^SOURCE_DIR=' | cut -d = -f 2-)
@@ -38,7 +38,7 @@ checksum_interval=$(echo "$config" | grep '^CHECKSUM_INTERVAL=' | cut -d = -f 2)
 if [[ -z "$checksum_interval" ]]; then
     notify-send -a "home-snapshot" -u critical 'Checksum interval is not specified' "Fix your configuration at $HOME/.config/home-snapshot.conf"
     exit 4
-elif ! [[ $checksum_interval =~ [[:digit:]] ]]; then
+elif ! [[ $checksum_interval =~ [[:digit:]] ]] || [[ $checksum_interval -lt 0 ]]; then
     notify-send -a "home-snapshot" -u critical 'Invalid checksum interval' "Fix your configuration at $HOME/.config/home-snapshot.conf"
     exit 4
 fi
@@ -90,14 +90,16 @@ fi
 
 rsync_options+=(--exclude-from="$HOME/.config/home-snapshot-excl.conf" --delete "$source_dir/" "$backup_path")
 
-cd "$destination_dir"
+cd "$destination_dir" || echo 'Failed to switch to destination directory' && exit 5
+
 # If a backup was taken today, don't take another one
-if [ -z "$(echo * | grep "$today_date")" ]; then
-    mkdir -p "$backup_path"
+# Check the state file for successful backup
+if ! grep -q "$today_date" "$HOME/.local/share/home-snapshot-state"; then
+
     rsync "${rsync_options[@]}" 2> $log_location
+
     # Act depending on rsync exit
     rsync_exit=$?
-
     if [[ $rsync_exit -ne 0 ]] && [[ $rsync_exit -ne 24 ]]; then
         notify-send -a "rsync" -u critical 'Home snapshot possibly failed' "Check the log at $log_location, the service will retry in 10 minutes."
         rm -rf "$backup_path"
@@ -113,9 +115,8 @@ if [ -z "$(echo * | grep "$today_date")" ]; then
         rounds_until_checksum="$checksum_interval"
     fi
 
-    if [[ $checksum_interval -ge 0 ]]; then
-        echo "$rounds_until_checksum" > "$HOME/.local/share/home-snapshot-state"
-    fi
+    # Write state on success
+    printf '%s\nlatest: %s' "$rounds_until_checksum" "$today_date" > "$HOME/.local/share/home-snapshot-state"
 else
     echo "Snapshot was already taken: $today_date"
 fi
@@ -123,7 +124,7 @@ fi
 # Cleanup old backups (keep only $max_snapshots)
 backups=$(ls -rt "$destination_dir")
 oldest_backup=$(echo "$backups" | awk 'NR==1 {print $0; exit}')
-backup_count=$((`echo "$backups" | wc -w`-1))
+backup_count=$(($(echo "$backups" | wc -w)-1))
 if [ "$backup_count" -gt "$max_snapshots" ] && [ -n "$oldest_backup" ]; then
     echo "Deleting snapshot directory $destination_dir/$oldest_backup"
     # Block the command if destination_dir is not set somehow

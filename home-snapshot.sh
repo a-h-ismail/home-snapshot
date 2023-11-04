@@ -48,7 +48,7 @@ remote_fs=$(echo "$config" | grep '^REMOTE_FILESYSTEM' | cut -d = -f 2)
 if [ ! -f "$HOME/.local/share/home-snapshot-state" ]; then
     echo "$checksum_interval" > "$HOME/.local/share/home-snapshot-state"
 else
-    rounds_until_checksum=$(cat "$HOME/.local/share/home-snapshot-state")
+    rounds_until_checksum=$(cat "$HOME/.local/share/home-snapshot-state" | awk 'NR==1 {print $0; exit}')
 fi
 
 # Use to add the --no-perms as workaround for filesystems not supporting Linux permissions
@@ -90,7 +90,7 @@ fi
 
 rsync_options+=(--exclude-from="$HOME/.config/home-snapshot-excl.conf" --delete "$source_dir/" "$backup_path")
 
-cd "$destination_dir" || echo 'Failed to switch to destination directory' && exit 5
+cd "$destination_dir" || exit 5
 
 # If a backup was taken today, don't take another one
 # Check the state file for successful backup
@@ -122,9 +122,9 @@ else
 fi
 
 # Cleanup old backups (keep only $max_snapshots)
-backups=$(ls -rt "$destination_dir")
+backups=$(ls -dtr ./??-??-????)
 oldest_backup=$(echo "$backups" | awk 'NR==1 {print $0; exit}')
-backup_count=$(($(echo "$backups" | wc -w)-1))
+backup_count=$(($(echo "$backups" | wc -w)))
 if [ "$backup_count" -gt "$max_snapshots" ] && [ -n "$oldest_backup" ]; then
     echo "Deleting snapshot directory $destination_dir/$oldest_backup"
     # Block the command if destination_dir is not set somehow

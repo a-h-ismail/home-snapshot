@@ -4,7 +4,7 @@
 config=$(cat "$HOME/.config/home-snapshot.conf")
 
 # Get and validate source directory
-source_dir=$(echo "$config" | grep '^SOURCE_DIR=' | cut -d = -f 2-)
+source_dir=$(grep '^SOURCE_DIR=' <<< "$config" | cut -d = -f 2-)
 if [[ -z "$source_dir" ]]; then
 	notify-send -a "home-snapshot" -u critical 'Source directory is not specified' "Fix your configuration at $HOME/.config/home-snapshot.conf"
 	exit 1
@@ -14,7 +14,7 @@ elif [[ ! -d "$source_dir" ]]; then
 fi
 
 # Get and validate destination directory
-destination_dir=$(echo "$config" | grep '^DESTINATION_DIR=' | cut -d = -f 2-)
+destination_dir=$(grep '^DESTINATION_DIR=' <<< "$config" | cut -d = -f 2-)
 if [[ -z "$destination_dir" ]]; then
 	notify-send -a "home-snapshot" -u critical 'Destination directory is not specified' "Fix your configuration at $HOME/.config/home-snapshot.conf"
 	exit 2
@@ -24,7 +24,7 @@ elif [[ ! -d "$destination_dir" ]]; then
 fi
 
 # Get number of snapshots to keep
-max_snapshots=$(echo "$config" | grep '^MAX_SNAPSHOTS=' | cut -d = -f 2)
+max_snapshots=$(grep '^MAX_SNAPSHOTS=' <<< "$config" | cut -d = -f 2)
 if [[ -z "$max_snapshots" ]]; then
 	notify-send -a "home-snapshot" -u critical 'Max snapshots is not specified' "Fix your configuration at $HOME/.config/home-snapshot.conf"
 	exit 3
@@ -34,7 +34,7 @@ elif ! [[ $max_snapshots =~ [[:digit:]] ]]; then
 fi
 
 # Get number of snapshots to run before running one with checksums
-checksum_interval=$(echo "$config" | grep '^CHECKSUM_INTERVAL=' | cut -d = -f 2)
+checksum_interval=$(grep '^CHECKSUM_INTERVAL=' <<< "$config" | cut -d = -f 2)
 if [[ -z "$checksum_interval" ]]; then
     notify-send -a "home-snapshot" -u critical 'Checksum interval is not specified' "Fix your configuration at $HOME/.config/home-snapshot.conf"
     exit 4
@@ -43,7 +43,7 @@ elif ! [[ $checksum_interval =~ [[:digit:]] ]] || [[ $checksum_interval -lt 0 ]]
     exit 4
 fi
 
-remote_fs=$(echo "$config" | grep '^REMOTE_FILESYSTEM' | cut -d = -f 2)
+remote_fs=$(grep '^REMOTE_FILESYSTEM' <<< "$config" | cut -d = -f 2)
 
 if [ ! -f "$HOME/.local/share/home-snapshot-state" ]; then
     echo "$checksum_interval" > "$HOME/.local/share/home-snapshot-state"
@@ -52,7 +52,7 @@ else
 fi
 
 # Use to add the --no-perms as workaround for filesystems not supporting Linux permissions
-no_perms=$(echo "$config" | grep '^NO_PERMS=' | cut -d = -f 2)
+no_perms=$(grep '^NO_PERMS=' <<< "$config" | cut -d = -f 2)
 
 today_date="$(date '+%d-%m-%Y')"
 # Full backup path
@@ -80,7 +80,7 @@ fi
 # Detect destination within the source tree to exclude it from rsync
 dst_to_src=`realpath --relative-to="$source_dir" "$destination_dir"`
 
-if [[ -z $(echo "$dst_to_src" | grep "^\.\./") ]]; then
+if [[ -z $(grep "^\.\./" <<< "$dst_to_src") ]]; then
     rsync_options+=(--exclude="$dst_to_src")
 fi
 
@@ -123,8 +123,8 @@ fi
 
 # Cleanup old backups (keep only $max_snapshots)
 backups=$(ls -dtr ./??-??-????)
-oldest_backup=$(echo "$backups" | awk 'NR==1 {print $0; exit}')
-backup_count=$(($(echo "$backups" | wc -w)))
+oldest_backup=$(awk 'NR==1 {print $0; exit}' <<< "$backups")
+backup_count=$(($(wc -w <<< "$backups")))
 if [ "$backup_count" -gt "$max_snapshots" ] && [ -n "$oldest_backup" ]; then
     echo "Deleting snapshot directory $destination_dir/$oldest_backup"
     # Block the command if destination_dir is not set somehow

@@ -88,7 +88,7 @@ if [[ -L $latest_link ]]; then
     rsync_options+=(--link-dest "$latest_link")
 fi
 
-rsync_options+=(--exclude-from="$HOME/.config/home-snapshot-excl.conf" --delete "$source_dir/" "$backup_path")
+rsync_options+=(--exclude-from="$HOME/.config/home-snapshot-excl.conf" "$source_dir/" "$backup_path")
 
 cd "$destination_dir" || exit 5
 

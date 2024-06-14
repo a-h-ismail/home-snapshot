@@ -6,7 +6,7 @@ RefuseManualStop=no
 [Timer]
 Persistent=false
 OnBootSec=5min
-OnUnitActiveSec=12h
+OnUnitActiveSec=4h
 Unit=home-snapshot.service
 
 [Install]
